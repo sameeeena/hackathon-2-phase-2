@@ -1,0 +1,18 @@
+
+  type: inference
+  runtime: python3.10
+  requirements: requirements.txt
+  secrets:
+    - key: DATABASE_URL
+      name: DATABASE_URL
+      description: Database connection string (PostgreSQL/Neon/SQLite)
+      required: true
+    - key: BETTER_AUTH_SECRET
+      name: BETTER_AUTH_SECRET
+      description: Authentication secret key
+      required: true
+
+
+
+
+

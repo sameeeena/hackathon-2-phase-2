@@ -1,0 +1,23 @@
+[project]
+name = "todo-backend"
+version = "0.1.0"
+description = "FastAPI backend for Todo App"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "sqlmodel",
+    "psycopg2-binary",
+    "python-jose[cryptography]",
+    "python-dotenv",
+    "alembic",
+    "pytest",
+    "httpx",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]

@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #f5f7ff;
+  --color-brand-100: #ebf0fe;
+  --color-brand-200: #dae3fd;
+  --color-brand-300: #bbccfb;
+  --color-brand-400: #93abf7;
+  --color-brand-500: #6681f2;
+  --color-brand-600: #4a5ee9;
+  --color-brand-700: #3b4ad6;
+  --color-brand-800: #353eb0;
+  --color-brand-900: #2f388c;
+  --color-brand-950: #1c2152;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+}
+
+:root {
+  --background: #f8f9fa; /* Light grey background */
+  --foreground: #212529; /* Dark grey/black text */
+  --card: #ffffff; /* White cards */
+  --card-foreground: #212529; /* Dark grey/black text */
+  --popover: #ffffff; /* White popovers */
+  --popover-foreground: #212529; /* Dark grey/black text */
+  --primary: #6c757d; /* Grey-600 */
+  --primary-foreground: #ffffff; /* White text */
+  --secondary: #e9ecef; /* Grey-200 */
+  --secondary-foreground: #212529; /* Dark grey/black */
+  --muted: #f1f3f5; /* Grey-100 */
+  --muted-foreground: #6c757d; /* Grey-600 */
+  --accent: #dee2e6; /* Grey-300 */
+  --accent-foreground: #212529; /* Dark grey/black */
+  --destructive: #dc3545; /* Red-500 */
+  --destructive-foreground: #ffffff; /* White text */
+  --border: #dee2e6; /* Grey-300 */
+  --input: #e9ecef; /* Grey-200 */
+  --ring: #6c757d; /* Grey-600 */
+  --radius: 0.5rem;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.dark {
+  --background: #f8f9fa; /* Light grey background */
+  --foreground: #212529; /* Dark grey/black text */
+  --card: #ffffff; /* White cards */
+  --card-foreground: #212529; /* Dark grey/black text */
+  --popover: #ffffff; /* White popovers */
+  --popover-foreground: #212529; /* Dark grey/black text */
+  --primary: #6c757d; /* Grey-600 */
+  --primary-foreground: #ffffff; /* White text */
+  --secondary: #e9ecef; /* Grey-200 */
+  --secondary-foreground: #212529; /* Dark grey/black */
+  --muted: #f1f3f5; /* Grey-100 */
+  --muted-foreground: #6c757d; /* Grey-600 */
+  --accent: #dee2e6; /* Grey-300 */
+  --accent-foreground: #212529; /* Dark grey/black */
+  --destructive: #dc3545; /* Red-500 */
+  --destructive-foreground: #ffffff; /* White text */
+  --border: #dee2e6; /* Grey-300 */
+  --input: #e9ecef; /* Grey-200 */
+  --ring: #6c757d; /* Grey-600 */
+}
+
+/* Apply smaller font sizes globally */
+body {
+  font-family: var(--font-sans);
+  font-size: 0.9rem; /* Slightly smaller default font size */
+}
+
+/* Ensure monospace font is also used to prevent preload warnings */
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+.text-sm {
+  font-size: 0.85rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.text-lg {
+  font-size: 1.1rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md dark:bg-black/70 border-white/20 dark:border-white/10;
+  }
+
+  .glass-card {
+    @apply bg-white/50 backdrop-blur-sm border border-zinc-200/50 dark:bg-zinc-900/50 dark:border-zinc-800/50;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500;
+  }
+
+  .animate-in {
+    animation: animate-in 0.3s ease-out;
+  }
+
+  .animate-fade-out {
+    animation: fade-out 0.3s ease-in forwards;
+  }
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }
+}

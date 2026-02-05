@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlmodel
+psycopg2-binary
+python-jose[cryptography]
+python-dotenv
+alembic
+pytest
+httpx
+PyJWT
