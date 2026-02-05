@@ -70,6 +70,13 @@ A modern fullstack todo application built with Next.js and FastAPI.
 2. Register or log in to your account
 3. Start managing your todos!
 
+## Documentation
+
+Additional documentation can be found in the `claude-skills/` directory:
+- `DEPLOYMENT_INSTRUCTIONS.md` - Instructions for deploying the application
+- `DEPLOYMENT_ROADMAP.md` - Roadmap for deployment strategies
+- `TASK_DEBUGGING.md` - Debugging guidelines for development
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
