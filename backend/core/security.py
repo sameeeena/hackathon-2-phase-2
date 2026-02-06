@@ -1,88 +1,65 @@
-from typing import Optional, Dict, Any
+from datetime import datetime, timedelta
+from typing import Optional, Union, Any
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-import jwt # PyJWT
-from jwt.algorithms import get_default_algorithms
-from jwt import PyJWKClient
-from pydantic import BaseModel
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from sqlmodel import Session
 import os
-import httpx
 from dotenv import load_dotenv
 
-# Robustly load .env from backend directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
-backend_dir = os.path.dirname(current_dir)
-env_path = os.path.join(backend_dir, ".env")
-load_dotenv(env_path)
+# Load env
+load_dotenv()
 
-# Configuration
-BETTER_AUTH_URL = os.getenv("BETTER_AUTH_URL", "http://localhost:3000")
-JWKS_URL = f"{BETTER_AUTH_URL}/api/auth/jwks"
+# Config
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-print(f"Security: JWKS URL configured as {JWKS_URL}")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token") # Note: /token is the relative URL
 
-# OAuth2PasswordBearer allows extracting the token from the Authorization header
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
-# Initialize PyJWKClient
-jwks_client = PyJWKClient(JWKS_URL)
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+# Circular import prevention: We need to get user from DB, but models might import security?
+# Usually models import sqlmodel.
+# Routes import security.
+# Security needs DB session to get user?
+# Actually, existing get_current_user returned user_id (str) from token.
+# To be compatible with 'todos.py' which expects user_id as string (sub),
+# we can just return the sub from token.
+# BUT, we should probably verify user exists in DB if we want to be strict.
+# For now, to match previous behavior (just validation), we decode token and return sub.
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
-    """
-    Validates the JWT token using JWKS (EdDSA support via PyJWT).
-    Returns the user_id (sub claim) if valid.
-    """
-    if not token:
-        print("Authentication Error: Missing Token")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not authenticated (Missing Token)",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
-        # 1. Get the signing key from JWKS
-        # PyJWKClient handles fetching and caching automatically
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
-        
-        # 2. Decode and verify
-        # PyJWT automatically verifies signature using the key
-        # We allow EdDSA and HMAC (in case it changes back)
-        payload = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=["EdDSA", "HS256", "RS256"],
-            options={"verify_aud": False} # Better Auth might not set audience
-        )
-        
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token missing 'sub' claim",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-            
-        return user_id
-
-    except jwt.PyJWTError as e:
-        print(f"JWT Verification Error: {str(e)}")
-        # Try to decode header for debugging
-        try:
-            header = jwt.get_unverified_header(token)
-            print(f"Token Header: {header}")
-        except:
-            pass
-            
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Could not validate credentials: {str(e)}",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    except Exception as e:
-        print(f"Unexpected Auth Error: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication failed",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub") # We will use username (or user_id) as sub
+        if username is None:
+            raise credentials_exception
+        # In the previous implementation, it returned user_id. 
+        # If we use username as ID, that's fine. 
+        # Or we can store ID in sub.
+        # Let's assume sub holds the unique identifier used in Todo.user_id
+        return username
+    except JWTError:
+        raise credentials_exception
