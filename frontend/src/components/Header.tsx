@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useSession } from '@/lib/auth-client';
+import { useSession } from '@/hooks/use-session';
 
 export default function Header() {
   const { data: session, isPending } = useSession();

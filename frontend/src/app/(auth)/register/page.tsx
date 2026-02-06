@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { signUp } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
@@ -17,16 +17,27 @@ export default function RegisterPage() {
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
-        const { error } = await signUp.email({
+
+        const result = await authClient.signUp({
+            username: name,
             email,
             password,
-            name,
-            callbackURL: "/"
         })
-        if (error) {
-            alert(error.message)
+
+        if ('error' in result && result.error) {
+            alert(result.error)
         } else {
-            router.push("/")
+            // On successful registration, try to log in
+            const loginResult = await authClient.signIn({
+                username: email,
+                password,
+            })
+
+            if ('error' in loginResult && loginResult.error) {
+                alert(loginResult.error)
+            } else {
+                router.push("/dashboard")
+            }
         }
         setLoading(false)
     }

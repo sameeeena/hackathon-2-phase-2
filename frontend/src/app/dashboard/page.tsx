@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, authClient } from "@/lib/auth-client";
+import { useSession } from "@/hooks/use-session";
+import { authClient } from "@/lib/auth-client";
 import { useTodos } from "@/hooks/use-todos";
 import { Button } from "@/components/ui/button";
 import { TodoForm } from "@/components/features/todo-form";

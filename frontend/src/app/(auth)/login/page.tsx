@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { signIn } from "@/lib/auth-client"
+import { authClient } from "@/lib/auth-client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
@@ -16,15 +16,16 @@ export default function LoginPage() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
-        const { error } = await signIn.email({
-            email,
-            password,
-            callbackURL: "/"
+
+        const result = await authClient.signIn({
+            username: email, // FastAPI typically uses username, but might accept email
+            password: password,
         })
-        if (error) {
-            alert(error.message)
+
+        if ('error' in result && result.error) {
+            alert(result.error)
         } else {
-            router.push("/")
+            router.push("/dashboard")
         }
         setLoading(false)
     }

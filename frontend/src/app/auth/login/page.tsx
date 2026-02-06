@@ -21,14 +21,14 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const result = await authClient.signIn.email({
-        email,
-        password,
-        callbackURL: "/dashboard",
+      // Use the new authentication method for FastAPI backend
+      const result = await authClient.signIn({
+        username: email, // FastAPI typically uses username, but might accept email
+        password: password,
       });
 
       if ('error' in result && result.error) {
-        setError('An error occurred during login');
+        setError(result.error as string);
       } else {
         router.push("/dashboard");
         router.refresh();

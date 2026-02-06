@@ -40,23 +40,13 @@ export async function middleware(request: NextRequest) {
                     cookies.includes('authjs.session-token') ||
                     cookies.includes('session');
 
-  // For a more accurate session check, we could make a request to the backend
-  // but that's more complex in middleware. For now, we'll check for the cookie presence.
-  // In a real implementation, you might need to call your backend auth endpoint.
-  let session = null;
-  if (hasSession) {
-    // If we have the auth cookie, we assume there's a valid session
-    // In a real implementation, you might want to verify the session token
-    session = { valid: true }; // Placeholder
-  }
-
   // If user is authenticated and trying to access a public auth route (like /auth/login), redirect to dashboard
-  if (session && (pathname === "/auth/login" || pathname === "/auth/register")) {
+  if (hasSession && (pathname === "/auth/login" || pathname === "/auth/register")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // If user is not authenticated and trying to access a protected route, redirect to login
-  if (!session && !isPublic && isProtectedRoute(pathname)) {
+  if (!hasSession && !isPublic && isProtectedRoute(pathname)) {
     // Store the attempted URL in search params so we can redirect back after login
     const redirectUrl = new URL("/login", request.url);
     redirectUrl.searchParams.set("callbackUrl", encodeURIComponent(request.url));

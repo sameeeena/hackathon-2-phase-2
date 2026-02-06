@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useSession } from '@/lib/auth-client';
+import { useSession } from '@/hooks/use-session';
 
 export default function LandingPage() {
   const { data: session, isPending } = useSession();

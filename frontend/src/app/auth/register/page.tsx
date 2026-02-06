@@ -29,22 +29,29 @@ export default function RegisterPage() {
     }
 
     try {
-      const result = await authClient.signUp.email({
-        name,
+      // Use the new registration method for FastAPI backend
+      const result = await authClient.signUp({
+        username: name,
         email,
         password,
-        callbackURL: "/dashboard",
       });
 
       if ('error' in result && result.error) {
         console.error("Registration error:", result.error);
-        const errorMessage = typeof result.error === 'string' 
-          ? result.error 
-          : result.error?.message || 'An error occurred during registration';
-        setError(errorMessage);
+        setError(result.error as string);
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        // On successful registration, try to log in
+        const loginResult = await authClient.signIn({
+          username: email,
+          password,
+        });
+
+        if ('error' in loginResult && loginResult.error) {
+          setError(loginResult.error as string);
+        } else {
+          router.push("/dashboard");
+          router.refresh();
+        }
       }
     } catch (err) {
       console.error("Registration exception:", err);
