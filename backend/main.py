@@ -5,11 +5,16 @@ import os
 from contextlib import asynccontextmanager
 from sqlmodel import SQLModel
 
+ # Include this import
+from api.routes.auth import router as auth_router
 # Import modules - try absolute imports first, then relative
 import sys
 import os
 from pathlib import Path
 
+
+4 # Add this line with your other routers
+app.include_router(auth_router, prefix="", tags=["auth"])  
 # Add the backend directory to the Python path to resolve imports
 current_dir = Path(__file__).resolve().parent
 sys.path.insert(0, str(current_dir))
